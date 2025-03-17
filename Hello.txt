@@ -1,6 +1,2 @@
 Hello world!
-<<<<<<< HEAD
 I love tchaikovski!!
-=======
-I love tchaikovski!!
->>>>>>> my_branch
