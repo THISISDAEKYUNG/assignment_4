@@ -1,59 +1,123 @@
 #include <iostream>
-using namespace std;
+using std::cin;
+using std::cout;
+using std::endl;
 
-// 병합 함수: arr[left..mid], arr[mid+1..right]를 정렬하여 병합
-void merge(int* arr, int* temp, int left, int mid, int right) {
-    int i = left;      // 왼쪽 부분 배열 시작 인덱스
-    int j = mid + 1;   // 오른쪽 부분 배열 시작 인덱스
-    int k = left;      // 임시 배열에 값을 채워 넣을 위치
+void CountingSort(int arr[]);
+void MergeSort(int arr[], int start, int end);
+void Merge(int arr[], int start, int end);
+void print_array(int array[], int size);
+int array1[16], array2[16], array3[16], array4[16];
 
-    // 왼쪽과 오른쪽 배열을 비교하면서 작은 값을 temp에 저장
-    while (i <= mid && j <= right) {
-        if (arr[i] <= arr[j])       // 왼쪽 값이 더 작거나 같으면
-            temp[k++] = arr[i++];   // 왼쪽 값을 복사하고 인덱스 증가
-        else
-            temp[k++] = arr[j++];   // 오른쪽 값을 복사하고 인덱스 증가
-    }
-
-    // 남은 왼쪽 부분 복사
-    while (i <= mid)
-        temp[k++] = arr[i++];
-
-    // 남은 오른쪽 부분 복사
-    while (j <= right)
-        temp[k++] = arr[j++];
-
-    // 병합된 배열을 원래 배열로 복사
-    for (int l = left; l <= right; l++) {
-        arr[l] = temp[l];
-    }
-}
-
-// 재귀적으로 배열을 나누고 병합하는 함수
-void mergeSort(int* arr, int* temp, int left, int right) {
-    if (left < right) {
-        int mid = (left + right) / 2;               // 배열을 절반으로 나눔
-        mergeSort(arr, temp, left, mid);            // 왼쪽 절반 정렬
-        mergeSort(arr, temp, mid + 1, right);       // 오른쪽 절반 정렬
-        merge(arr, temp, left, mid, right);         // 정렬된 두 부분을 병합
-    }
-}
-
-// 메인 함수
 int main() {
-    int arr[] = {12, 11, 13, 5, 6, 7};              // 정렬할 배열
-    int n = sizeof(arr) / sizeof(arr[0]);           // 배열 크기 계산
-    int temp[100];                                  // 병합용 임시 배열
+  int type;
+  cin >> type;
 
-    cout << "before sort: ";
-    for (int i = 0; i < n; i++) cout << arr[i] << " ";
-    cout << endl;
+  int array_c[16] = {0,};
+  int array_m[16] = {0,};
 
-    mergeSort(arr, temp, 0, n - 1);                 // 정렬 실행
+  switch (type) {
+  case 1:
+    for(int i=0; i<16; i++){
+      cin>>array_c[i];
+    }
+    CountingSort(array_c);
+    break;
+  case 2:
+    for(int i=0; i<16; i++){
+      cin>>array_m[i];
+    }
+    print_array(array_m, 16);
+    MergeSort(array_m, 0, 15);
+    print_array(array1, 16);
+    print_array(array2, 16);
+    print_array(array3, 16);
+    print_array(array_m, 16);
+    break;
+  }
+}
 
-    cout << "after sort: ";
-    for (int i = 0; i < n; i++) cout << arr[i] << " ";
-    cout << endl;
+// your code starts here (function definition : CountingSort, MergeSort)
+void print_array(int array[], int size) {
+  for (int k = 0; k < size; k++) {
+    if (k != size - 1) {
+      cout << array[k] << " ";
+    } else {
+      cout << array[k] << endl;
+    }
+  }
+}
 
-    return 0;
+void CountingSort(int array[]) {
+  // step1 : find maximum value. we assume maximum value=5
+  int max = 5;
+  int size = 16;
+  // step2 : make counting array and initialize it with 0
+  int count_array[6] = {
+      0,
+  };
+  int result_array[16] = {
+      0,
+  };
+
+  // step3 : calculate counts of each element and store it in count array
+  for (int i = 0; i < size; i++) {
+    count_array[array[i]] += 1;
+  }
+
+  // step4 : calculate cumulative sum
+  for (int i = 0; i < max; i++) {
+    count_array[i + 1] += count_array[i];
+  }
+
+  // step5 : starts with last element of original array.
+  for (int i = size - 1; i >= 0; i--) {
+    // You can use the code below
+    // fill the blanks
+    /*blank1*/ count_array[array[i]] -= 1;               
+    int target_index = /*blank2(same as blank1)*/ count_array[array[i]];
+    result_array[target_index] = /*blank3*/ array[i];
+  }
+  print_array(result_array, 16);
+}
+
+void MergeSort(int array[], int start, int end){
+  if(start<end){
+    int mid= (start+end)/2;
+    MergeSort(array, start, mid);
+    MergeSort(array, mid+1, end);
+    Merge(array, start, end);
+  }
+}
+
+void Merge(int array[], int start, int end){
+  int* tmp;
+  int level = (end + 1 - start);
+  if (level == 2) tmp = array1;
+  if (level == 4) tmp = array2;
+  if (level == 8) tmp = array3;
+  if (level == 16) tmp = array4;
+  // you should save intermediate results in the "tmp" array as well as in "result" array.
+  /*Implement Merge function*/
+  int mid = (start + end) / 2;
+  int i = start;
+  int j = mid + 1;
+  int k = start;
+  while (i <= mid && j <= end) {
+      if (array[i] <= array[j]) {
+          tmp[k++] = array[i++];
+      }
+      else {
+          tmp[k++] = array[j++];
+      }
+  }
+  while (i <= mid) {
+      tmp[k++] = array[i++];
+  }
+  while (j <= end) {
+      tmp[k++] = array[j++];
+  }
+  for (int l = start; l <= end; l++) {
+      array[l] = tmp[l];
+  }
 }
